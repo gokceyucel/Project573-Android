@@ -3,6 +3,7 @@ package com.githubnotetaker;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.airbnb.android.react.maps.MapsPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
@@ -24,7 +25,8 @@ public class MainApplication extends NavigationApplication {
   //   @Override
   //   protected List<ReactPackage> getPackages() {
   //     return Arrays.<ReactPackage>asList(
-  //         new MainReactPackage()
+  //         new MainReactPackage(),
+  //          new MapsPackage()
   //     );
   //   }
   // };
@@ -49,11 +51,12 @@ public class MainApplication extends NavigationApplication {
      @Override
      public List<ReactPackage> createAdditionalReactPackages() {
      // Add additional packages you require here
-    //  return Arrays.<ReactPackage>asList(
-    //             new InsertPackageName() // For example: new VectorIconsPackage()
-    //         );
+     return Arrays.<ReactPackage>asList(
+                // new InsertPackageName() // For example: new VectorIconsPackage()
+                new MapsPackage()
+            );
      // No need to add RnnPackage and MainReactPackage
      // Simply return null if you do not have additional packages:
-     return null;
+    //  return null;
      }
 }

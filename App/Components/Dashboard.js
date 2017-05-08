@@ -6,7 +6,7 @@ import {
   Image,
   TouchableHighlight
 } from 'react-native';
-
+import { Navigation } from 'react-native-navigation';
 import api from '../Utils/api';
 
 const styles = StyleSheet.create({
@@ -45,9 +45,35 @@ export default class Dashboard extends React.Component {
 
     return obj;
   }
+  _onPressButtonLocation() {
+    console.log('>>>>>>>>>>>>>>>>>>>>>>>> _onPressButtonLocation');
+    this.props.navigator.push({
+      screen: 'MapScreen',
+      title: 'MapScreen',
+    });
+  }
   render() {
     return (
-      <Text>Welcome {this.props.user.name} ({this.props.user.screen_name})</Text>
+      <View style={styles.container}>
+        <Image source={{ uri: this.props.user.profile_image_url.replace('_normal.jpg', '_400x400.jpg') }} style={styles.image} />
+        {/*<Text>Welcome {this.props.user.name} ({this.props.user.screen_name})</Text>*/}
+        <TouchableHighlight
+          style={this.makeBackground(0)}
+          underlayColor='#88D4F5'>
+          <Text style={styles.buttonText}> {this.props.user.name} </Text>
+        </TouchableHighlight>
+        <TouchableHighlight
+          style={this.makeBackground(1)}
+          underlayColor='#88D4F5'
+          onPress={this._onPressButtonLocation.bind(this)}>
+          <Text style={styles.buttonText}> Get Location </Text>
+        </TouchableHighlight>
+        <TouchableHighlight
+          style={this.makeBackground(2)}
+          underlayColor='#88D4F5'>
+          <Text style={styles.buttonText}> Logout </Text>
+        </TouchableHighlight>
+      </View>
     );
   }
 }
