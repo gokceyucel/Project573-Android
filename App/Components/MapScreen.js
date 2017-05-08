@@ -62,7 +62,6 @@ export default class MapScreen extends React.Component {
                 longitude: tweet.geo.coordinates[1]
               }}
               title={tweet.text}
-              description={tweet.text}
             />)
           });
           this.setState({ markers });

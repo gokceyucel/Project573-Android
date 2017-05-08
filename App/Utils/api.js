@@ -10,16 +10,15 @@ export default api = {
     return fetch(url).then(res => res.json())
   },
   getTwitterSigninUrl() {
-    // const url = 'https://573.gkcycl.host/api/request-token';
-    const url = 'http://192.168.0.19:8080/api/request-token';
+    const url = 'https://573.gkcycl.host/api/request-token';
     return fetch(url).then(res => res.json());
   },
   getTwitterUserInfo(tokenAndVerifierParams) {
-    const url = 'http://192.168.0.19:8080/api/access-token?' + tokenAndVerifierParams;
+    const url = `https://573.gkcycl.host/api/access-token?${tokenAndVerifierParams}`;
     return fetch(url);
   },
   getTweets(query, latitude, longitude) {
-    const url = `http://192.168.0.19:8080/api/tweets/${query}/${latitude},${longitude}`;
+    const url = `https://573.gkcycl.host/api/tweets/${query}/${latitude},${longitude}`;
     return fetch(url).then(res => res.json());
   }
 };
