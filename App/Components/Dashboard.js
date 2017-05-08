@@ -4,7 +4,8 @@ import {
   View,
   StyleSheet,
   Image,
-  TouchableHighlight
+  TouchableHighlight,
+  AsyncStorage
 } from 'react-native';
 import { Navigation } from 'react-native-navigation';
 import api from '../Utils/api';
@@ -46,10 +47,16 @@ export default class Dashboard extends React.Component {
     return obj;
   }
   _onPressButtonLocation() {
-    console.log('>>>>>>>>>>>>>>>>>>>>>>>> _onPressButtonLocation');
     this.props.navigator.push({
       screen: 'MapScreen',
       title: 'MapScreen',
+    });
+  }
+  _onPressButtonLogout() {
+    AsyncStorage.removeItem('userData');
+    this.props.navigator.push({
+      screen: 'Main',
+      title: 'Main',
     });
   }
   render() {
@@ -70,7 +77,8 @@ export default class Dashboard extends React.Component {
         </TouchableHighlight>
         <TouchableHighlight
           style={this.makeBackground(2)}
-          underlayColor='#88D4F5'>
+          underlayColor='#88D4F5'
+          onPress={this._onPressButtonLogout.bind(this)}>
           <Text style={styles.buttonText}> Logout </Text>
         </TouchableHighlight>
       </View>

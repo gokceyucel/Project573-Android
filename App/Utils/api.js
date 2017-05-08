@@ -17,5 +17,9 @@ export default api = {
   getTwitterUserInfo(tokenAndVerifierParams) {
     const url = 'http://192.168.0.19:8080/api/access-token?' + tokenAndVerifierParams;
     return fetch(url);
+  },
+  getTweets(query, latitude, longitude) {
+    const url = `http://192.168.0.19:8080/api/tweets/${query}/${latitude},${longitude}`;
+    return fetch(url).then(res => res.json());
   }
 };

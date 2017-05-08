@@ -8,7 +8,8 @@ import {
   ActivityIndicator,
   Platform,
   Linking,
-  AppState
+  AppState,
+  AsyncStorage
 } from 'react-native';
 import { Navigation } from 'react-native-navigation';
 import api from '../Utils/api';
@@ -96,18 +97,43 @@ export default class Main extends Component {
 
         api.getTwitterUserInfo(welcomeProps)
           .then(res => {
+            const userInfoString = res._bodyInit;
+
+            AsyncStorage.setItem('userData', userInfoString, (err) => {
+              if (err) {
+                // Error saving data
+                console.error('Error saving user data to AsyncStorage');
+              }
+            });
+
             this.props.navigator.push({
               screen: 'Dashboard',
               title: 'Dashboard',
               passProps: {
-                user: JSON.parse(res._bodyInit)
+                user: JSON.parse(userInfoString)
               }
-            })
+            });
           });
       }
     });
   }
   componentDidMount() {
+    console.log('Component did mount, fetching user data...');
+    AsyncStorage.getItem('userData', (err, userDataString) => {
+      if (err) {
+        return console.error('Error retrieving user data from AsyncStorage');
+      }
+      if (userDataString !== null) {
+        this.props.navigator.push({
+          screen: 'Dashboard',
+          title: 'Dashboard',
+          passProps: {
+            user: JSON.parse(userDataString)
+          }
+        });
+      }
+    });
+
     AppState.addEventListener('change', this._handleAppStateChange);
     this._checkDeepLink();
   }
