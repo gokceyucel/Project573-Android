@@ -1,4 +1,4 @@
-package com.githubnotetaker;
+package com.Project573;
 
 import android.app.Application;
 

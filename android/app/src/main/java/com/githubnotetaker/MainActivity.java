@@ -1,4 +1,4 @@
-package com.githubnotetaker;
+package com.Project573;
 
 import com.facebook.react.ReactActivity;
 
@@ -10,6 +10,6 @@ public class MainActivity extends com.reactnativenavigation.controllers.SplashAc
     //  */
     // @Override
     // protected String getMainComponentName() {
-    //     return "githubNotetaker";
+    //     return "Project573";
     // }
 }
