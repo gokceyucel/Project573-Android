@@ -63,7 +63,6 @@ export default class Dashboard extends React.Component {
     return (
       <View style={styles.container}>
         <Image source={{ uri: this.props.user.profile_image_url.replace('_normal.jpg', '_400x400.jpg') }} style={styles.image} />
-        {/*<Text>Welcome {this.props.user.name} ({this.props.user.screen_name})</Text>*/}
         <TouchableHighlight
           style={this.makeBackground(0)}
           underlayColor='#88D4F5'>

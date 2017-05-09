@@ -72,7 +72,7 @@ export default class Main extends Component {
       username: '',
       isLoading: false,
       error: false
-    }
+    };
     this._handleAppStateChange = this._handleAppStateChange.bind(this);
   }
   _handleAppStateChange(currentAppState) {
@@ -82,73 +82,57 @@ export default class Main extends Component {
     }
   }
   _checkDeepLink() {
-    Linking.getInitialURL().then(url => {
-      if (url) {
-        // TODO: refactor this
-        var parts = url.split('//')[1].split('/');
-        var welcomePart = parts[parts.length - 1];
-        var welcomeProps = welcomePart.split('?')[1];
-        // var queryParams = welcomeProps.split('&');
-        // var props = queryParams.reduce(function (prev, curr, i, arr) {
-        //   var splitted = curr.split("=");
-        //   prev[decodeURIComponent(splitted[0])] = decodeURIComponent(splitted[1]);
-        //   return prev;
-        // }, {});
+    Linking.getInitialURL()
+      .then(url => {
+        if (!url) return;
+
+        try {
+          var parts = url.split('//')[1].split('/');
+          var welcomePart = parts[parts.length - 1];
+          var welcomeProps = welcomePart.split('?')[1];
+        } catch (err) {
+          console.error(err);
+        }
 
         api.getTwitterUserInfo(welcomeProps)
           .then(res => {
             const userInfoString = res._bodyInit;
 
             AsyncStorage.setItem('userData', userInfoString, (err) => {
-              if (err) {
-                // Error saving data
-                console.error('Error saving user data to AsyncStorage');
-              }
+              if (err) console.error('Error saving user data to AsyncStorage');
             });
 
             this.props.navigator.push({
               screen: 'Dashboard',
               title: 'Dashboard',
-              passProps: {
-                user: JSON.parse(userInfoString)
-              }
+              passProps: { user: JSON.parse(userInfoString) }
             });
-          });
-      }
-    });
-  }
-  componentDidMount() {
-    console.log('Component did mount, fetching user data...');
-    AsyncStorage.getItem('userData', (err, userDataString) => {
-      if (err) {
-        return console.error('Error retrieving user data from AsyncStorage');
-      }
-      if (userDataString !== null) {
-        this.props.navigator.push({
-          screen: 'Dashboard',
-          title: 'Dashboard',
-          passProps: {
-            user: JSON.parse(userDataString)
-          }
-        });
-      }
-    });
 
-    AppState.addEventListener('change', this._handleAppStateChange);
-    this._checkDeepLink();
+          });
+      });
   }
   componentWillUnmount() {
     AppState.removeEventListener('change', this._handleAppStateChange);
   }
-  handleChange(event) {
-    this.setState({
-      username: event.nativeEvent.text
+  componentDidMount() {
+    AsyncStorage.getItem('userData', (err, userDataString) => {
+      if (err) return console.error('Error retrieving user data from AsyncStorage');
+      if (!userDataString) return console.warn('User data not found');
+
+      this.props.navigator.push({
+        screen: 'Dashboard',
+        title: 'Dashboard',
+        passProps: { user: JSON.parse(userDataString); }
+      });
     });
+    AppState.addEventListener('change', this._handleAppStateChange);
+    this._checkDeepLink();
   }
   handleSubmit() {
     this.setState({
       isLoading: true
     });
+
     api.getTwitterSigninUrl()
       .then(res => {
         if (res.message === 'Not Found') {
@@ -157,13 +141,15 @@ export default class Main extends Component {
             isLoading: false
           });
         } else {
-          Linking.canOpenURL(res.redirect_url).then(supported => {
-            if (!supported) {
-              console.log('Can\'t handle url: ' + res.redirect_url);
-            } else {
-              return Linking.openURL(res.redirect_url);
-            }
-          }).catch(err => console.error('An error occurred', err));
+          Linking.canOpenURL(res.redirect_url)
+            .then(supported => {
+              if (!supported) {
+                console.warn('Can\'t handle url: ' + res.redirect_url);
+              } else {
+                return Linking.openURL(res.redirect_url);
+              }
+            })
+            .catch(err => console.error('An error occurred', err));
           this.setState({
             isLoading: false,
             error: false,
@@ -173,10 +159,7 @@ export default class Main extends Component {
       });
   }
   render() {
-    const showErr = (
-      this.state.error ? <Text> {this.state.error} </Text> : <View></View>
-    )
-
+    const showErr = (this.state.error ? <Text> {this.state.error} </Text> : <View></View>);
     return (
       <View style={styles.mainContainer}>
         <TouchableHighlight

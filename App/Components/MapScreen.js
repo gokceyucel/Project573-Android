@@ -9,14 +9,11 @@ import {
 import { Navigation } from 'react-native-navigation';
 import MapView from 'react-native-maps';
 import { Dimensions } from 'react-native'
-
 import api from '../Utils/api';
 
 const styles = StyleSheet.create({
   container: {
     ...StyleSheet.absoluteFillObject,
-    // height: 400,
-    // width: 400,
     flex: 1,
     justifyContent: 'flex-end',
     alignItems: 'center',
@@ -34,9 +31,7 @@ export default class MapScreen extends React.Component {
     };
   }
   componentDidMount() {
-    console.log('>>>>>>>>>>>>>>>> MapScreen componentDidMount');
     navigator.geolocation.getCurrentPosition((position) => {
-      console.log('>>>>>>>>>>> CURRENT POSITION', position);
       const { height, width } = Dimensions.get('window');
       const ASPECT_RATIO = width / height
       const LATITUDE_DELTA = 0.1 //Very high zoom level
@@ -48,7 +43,6 @@ export default class MapScreen extends React.Component {
         latitudeDelta: LATITUDE_DELTA
       };
 
-      console.log('this.refs.map', this.refs.map);
       this.refs.map.animateToRegion(region);
 
       api.getTweets('hava', region.latitude, region.longitude)
@@ -66,10 +60,7 @@ export default class MapScreen extends React.Component {
           });
           this.setState({ markers });
         });
-    }, (error) => {
-      console.error('>>>>>>>>>>>> ERROR LOCATION');
-      console.error(JSON.stringify(error));
-    });
+    }, (error) => console.error(JSON.stringify(error)));
 
     this.watchID = navigator.geolocation.watchPosition((position) => {
       var lastPosition = JSON.stringify(position);
