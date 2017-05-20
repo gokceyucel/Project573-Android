@@ -1,4 +1,4 @@
-import { host } from '/config.json';
+import { host } from '../../config.json';
 
 export default api = {
   getTwitterSigninUrl() {

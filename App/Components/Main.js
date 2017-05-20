@@ -117,12 +117,22 @@ export default class Main extends Component {
   componentDidMount() {
     AsyncStorage.getItem('userData', (err, userDataString) => {
       if (err) return console.error('Error retrieving user data from AsyncStorage');
-      if (!userDataString) return console.warn('User data not found');
+      if (!userDataString) return console.warn('User data not found. Please sign in.');
+
+      var userData;
+      try {
+        userData = JSON.parse(userDataString)
+      } catch (ex) {
+
+      }
+      if (!userData) { return; }
 
       this.props.navigator.push({
         screen: 'Dashboard',
         title: 'Dashboard',
-        passProps: { user: JSON.parse(userDataString); }
+        passProps: {
+          user: userData
+        }
       });
     });
     AppState.addEventListener('change', this._handleAppStateChange);

@@ -30,51 +30,70 @@ export default class MapScreen extends React.Component {
       markers: []
     };
   }
-  componentDidMount() {
-    navigator.geolocation.getCurrentPosition((position) => {
-      const { height, width } = Dimensions.get('window');
-      const ASPECT_RATIO = width / height
-      const LATITUDE_DELTA = 0.1 //Very high zoom level
-      const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO
-      const region = {
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude,
-        longitudeDelta: LONGITUDE_DELTA,
-        latitudeDelta: LATITUDE_DELTA
-      };
-
-      this.refs.map.animateToRegion(region);
-
-      api.getTweets('hava', region.latitude, region.longitude)
-        .then(tweets => {
-          const markers = tweets.map((tweet, index) => {
-            if (!tweet.geo) return;
-            return (<MapView.Marker
-              key={index}
-              coordinate={{
-                latitude: tweet.geo.coordinates[0],
-                longitude: tweet.geo.coordinates[1]
-              }}
-              title={tweet.text}
-            />)
-          });
-          this.setState({ markers });
-        });
-    }, (error) => console.error(JSON.stringify(error)));
+  getCurrentLocation(next) {
+    navigator.geolocation.getCurrentPosition(
+      position => {
+        const { height, width } = Dimensions.get('window');
+        const ASPECT_RATIO = width / height
+        const LATITUDE_DELTA = 0.1 //Very high zoom level
+        const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO
+        const region = {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          longitudeDelta: LONGITUDE_DELTA,
+          latitudeDelta: LATITUDE_DELTA
+        };
+        next(region);
+      },
+      error => console.warn(error.message),
+      { enableHighAccuracy: false, timeout: 20000, maximumAge: 1000 }
+    );
 
     this.watchID = navigator.geolocation.watchPosition((position) => {
       var lastPosition = JSON.stringify(position);
       this.setState({ lastPosition });
     });
   }
+  componentDidMount() {
+    // this.getCurrentLocation();
+    this.getCurrentLocation(region => {
+      this.refs.map.animateToRegion(region);
+      this.setState({ region });
+      return region;
+    });
+  }
+  getTweetsAndMarkThem(region) {
+    api
+      .getTweets('hava', region.latitude, region.longitude)
+      .then(tweets => {
+        if (tweets.length < 1) {
+          return;
+        }
+        const markers = tweets.map((tweet, index) => {
+          if (!tweet.geo) return;
+          return (
+            <MapView.Marker
+              key={index}
+              coordinate={{
+                latitude: tweet.geo.coordinates[0],
+                longitude: tweet.geo.coordinates[1]
+              }}
+              title={tweet.text}
+            />
+          );
+        });
+        this.setState({ markers });
+      });
+  }
   componentWillUnmount() {
     navigator.geolocation.clearWatch(this.watchID);
   }
   onRegionChange(region) {
     console.log('onRegionChange', region);
+    this.setState({ region });
   }
   onRegionChangeComplete(region) {
-    console.log('onRegionChangeComplete', region);
+    this.getTweetsAndMarkThem(region);
   }
   render() {
     return (
@@ -82,7 +101,9 @@ export default class MapScreen extends React.Component {
         <MapView
           ref='map'
           style={styles.map}
-          onRegionChange={this.onRegionChange}
+          onRegionChange={this.onRegionChange.bind(this)}
+          onRegionChangeComplete={this.onRegionChangeComplete.bind(this)}
+          region={this.state.region}
           showsUserLocation={true}
         >
           {this.state.markers}
