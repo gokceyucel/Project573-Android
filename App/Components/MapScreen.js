@@ -8,7 +8,8 @@ import {
 } from 'react-native';
 import { Navigation } from 'react-native-navigation';
 import MapView from 'react-native-maps';
-import { Dimensions } from 'react-native'
+import { Dimensions } from 'react-native';
+import LocationServicesDialogBox from "react-native-android-location-services-dialog-box";
 import api from '../Utils/api';
 
 const styles = StyleSheet.create({
@@ -55,12 +56,22 @@ export default class MapScreen extends React.Component {
     });
   }
   componentDidMount() {
-    // this.getCurrentLocation();
-    this.getCurrentLocation(region => {
-      this.refs.map.animateToRegion(region);
-      this.setState({ region });
-      return region;
-    });
+    LocationServicesDialogBox
+      .checkLocationServicesIsEnabled({
+        message: "<h2>Use Location ?</h2>This app wants to change your device settings:<br/><br/>Use GPS, Wi-Fi, and cell network for location<br/><br/><a href='#'>Learn more</a>",
+        ok: "YES",
+        cancel: "NO"
+      })
+      .then(success => {
+        this.getCurrentLocation(region => {
+          this.refs.map.animateToRegion(region);
+          this.setState({ region });
+          return region;
+        });
+      })
+      .catch(error => {
+        console.warn(error.message);
+      });
   }
   getTweetsAndMarkThem(region) {
     api

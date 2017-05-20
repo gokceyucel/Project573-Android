@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.reactnativenavigation.NavigationApplication;
+import com.showlocationservicesdialogbox.LocationServicesDialogBoxPackage;
 
 public class MainApplication extends NavigationApplication {
 
@@ -53,7 +54,8 @@ public class MainApplication extends NavigationApplication {
      // Add additional packages you require here
      return Arrays.<ReactPackage>asList(
                 // new InsertPackageName() // For example: new VectorIconsPackage()
-                new MapsPackage()
+                new MapsPackage(),
+                new LocationServicesDialogBoxPackage()
             );
      // No need to add RnnPackage and MainReactPackage
      // Simply return null if you do not have additional packages:
